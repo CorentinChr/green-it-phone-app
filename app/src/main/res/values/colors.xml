@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Green / eco palette -->
+    <color name="green_primary">#2E7D32</color>
+    <color name="green_primary_variant">#1B5E20</color>
+    <color name="green_light">#C8E6C9</color>
+    <color name="green_background">#F6FFF6</color>
+    <color name="card_background">#FFFFFFFF</color>
+    <color name="text_primary">#0B3D0B</color>
+    <color name="text_secondary">#4C6B4C</color>
+</resources>

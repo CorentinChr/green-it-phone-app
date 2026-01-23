@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/green_background"
+    tools:context=".HomeActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/green_primary"
+        android:titleTextColor="@color/white"
+        android:title="@string/app_title"
+        app:popupTheme="@style/Theme.SAE6_APP" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Profile card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/avatar"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_avatar_placeholder"
+                        android:contentDescription="Avatar utilisateur" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+
+                        <TextView
+                            android:id="@+id/user_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Utilisateur Demo"
+                            android:textColor="@color/text_primary"
+                            android:textStyle="bold"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/user_score"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Score : 1240 pts"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Grid of cards -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="3"
+                android:orientation="horizontal">
+
+                <include layout="@layout/item_card_home"
+                    android:id="@+id/card_dashboard"
+                    android:layout_row="0"
+                    android:layout_column="0"
+                    android:layout_margin="8dp" />
+
+                <include layout="@layout/item_card_home"
+                    android:id="@+id/card_quiz"
+                    android:layout_row="0"
+                    android:layout_column="1"
+                    android:layout_margin="8dp" />
+
+                <include layout="@layout/item_card_home"
+                    android:id="@+id/card_info"
+                    android:layout_row="1"
+                    android:layout_column="0"
+                    android:layout_margin="8dp" />
+
+                <include layout="@layout/item_card_home"
+                    android:id="@+id/card_progress"
+                    android:layout_row="1"
+                    android:layout_column="1"
+                    android:layout_margin="8dp" />
+
+                <include layout="@layout/item_card_home"
+                    android:id="@+id/card_profile"
+                    android:layout_row="2"
+                    android:layout_column="0"
+                    android:layout_columnSpan="2"
+                    android:layout_margin="8dp" />
+
+            </GridLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

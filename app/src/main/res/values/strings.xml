@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SAE6_APP</string>
+    <string name="app_title">GreenIT</string>
+
+    <!-- Profil par defaut (fictif) -->
+    <string name="user_name_default">Alice Dupont</string>
+    <string name="user_score_default">Score : 1 240 pts</string>
+    <string name="avatar_description">Avatar dAlice Dupont</string>
+
+    <!-- Titres des cartes d'accueil -->
+    <string name="card_dashboard">Tableau de bord</string>
+    <string name="card_quiz">Quiz</string>
+    <string name="card_info">Fiches dinformation</string>
+    <string name="card_progress">Suivi de progression</string>
+    <string name="card_profile">Profil</string>
+</resources>

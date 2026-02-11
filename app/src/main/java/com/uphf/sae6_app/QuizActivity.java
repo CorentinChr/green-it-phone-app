@@ -93,7 +93,7 @@ public class QuizActivity extends AppCompatActivity {
                 "Bonne réponse ! Le CO2 est l'un des gaz à effet de serre les plus importants.",
                 "climat",
                 1,
-                null));
+                "placeholder")); // Image placeholder
 
         allItems.add(new QuizItem(2,
                 "Quelle action réduit la consommation d'énergie domestique ?",
@@ -102,7 +102,7 @@ public class QuizActivity extends AppCompatActivity {
                 "Les ampoules LED consomment beaucoup moins d'énergie que les ampoules incandescentes.",
                 "energie",
                 1,
-                "ic_quiz_energy"));
+                "ic_quiz_energy")); // L'image n'existe pas donc l'app n'affiche rien
 
         allItems.add(new QuizItem(3,
                 "Quel matériau est le plus facilement recyclable ?",
@@ -120,7 +120,7 @@ public class QuizActivity extends AppCompatActivity {
                 "Une bouteille plastique peut mettre plusieurs centaines d'années à se décomposer.",
                 "dechets",
                 3,
-                null));
+                null)); // Pas d'image pour cette question
     }
 
     private void applyFilters(String theme, int difficulty) {

@@ -14,4 +14,15 @@
     <string name="card_info">Fiches</string>
     <string name="card_progress">Progrès</string>
     <string name="card_profile">Profil</string>
+
+    <!-- Dashboard strings -->
+    <string name="dashboard_title">Tableau de bord environnemental</string>
+    <string name="interval_label">Fréquence de nettoyage des mails (jours entre nettoyages)</string>
+    <string name="interval_example">Tous les 7 jours</string>
+    <string name="unsubscribe_label">Se désabonner des newsletters</string>
+    <string name="impact_title">Impact estimé</string>
+    <string name="simulation_note">Simulation indicative — valeurs simplifiées pour visualiser un impact en temps réel.</string>
+
+    <!-- Format string pour l'interval -->
+    <string name="interval_value_format">Tous les %1$d jours</string>
 </resources>

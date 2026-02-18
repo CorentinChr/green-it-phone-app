@@ -4,8 +4,8 @@
     <string name="app_title">GreenIT</string>
 
     <!-- Profil par defaut (fictif) -->
-    <string name="user_name_default">Alice Dupont</string>
-    <string name="user_score_default">Score : 1 240 pts</string>
+    <string name="user_name_default">Noa Bajomée</string>
+    <string name="user_score_default">Score : 600 pts</string>
     <string name="avatar_description">Avatar dAlice Dupont</string>
 
     <!-- Titres des cartes d'accueil -->

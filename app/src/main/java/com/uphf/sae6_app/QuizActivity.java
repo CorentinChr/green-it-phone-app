@@ -1,6 +1,7 @@
 package com.uphf.sae6_app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class QuizActivity extends AppCompatActivity {
 
@@ -27,6 +27,10 @@ public class QuizActivity extends AppCompatActivity {
     private List<QuizItem> allItems = new ArrayList<>();
     private List<QuizItem> items = new ArrayList<>(); // items filtrés
     private int currentIndex = 0;
+
+    // Scoring
+    private int scoreCorrect = 0;
+    private boolean answeredCurrent = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,11 @@ public class QuizActivity extends AppCompatActivity {
             }
         }
 
+        // Si aucune difficulté n'est fournie, on applique le niveau enregistré (si existant)
+        if (difficultyFilter <= 0) {
+            difficultyFilter = getDifficultyFromUserLevel();
+        }
+
         applyFilters(themeFilter, difficultyFilter);
 
         // Set listeners
@@ -80,8 +89,22 @@ public class QuizActivity extends AppCompatActivity {
             nextBtn.setOnClickListener(v -> finish());
         } else {
             currentIndex = 0;
+            scoreCorrect = 0;
+            answeredCurrent = false;
             displayCurrent();
         }
+    }
+
+    private int getDifficultyFromUserLevel() {
+        SharedPreferences prefs = getSharedPreferences(QuizLevelActivity.PREFS_NAME, MODE_PRIVATE);
+        boolean done = prefs.getBoolean(QuizLevelActivity.KEY_LEVEL_DONE, false);
+        if (!done) return -1;
+
+        String level = prefs.getString(QuizLevelActivity.KEY_USER_LEVEL, null);
+        if (QuizLevelActivity.LEVEL_BEGINNER.equals(level)) return 1;
+        if (QuizLevelActivity.LEVEL_INTERMEDIATE.equals(level)) return 2;
+        if (QuizLevelActivity.LEVEL_ADVANCED.equals(level)) return 3;
+        return -1;
     }
 
     private void loadSampleQuestions() {
@@ -161,6 +184,8 @@ public class QuizActivity extends AppCompatActivity {
             }
         }
 
+        answeredCurrent = false;
+
         // Info
         quizInfo.setVisibility(View.GONE);
         quizInfo.setText("");
@@ -171,6 +196,9 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void onAnswerSelected(int selectedIndex) {
+        if (answeredCurrent) return;
+        answeredCurrent = true;
+
         QuizItem q = items.get(currentIndex);
 
         // Désactiver boutons
@@ -178,6 +206,7 @@ public class QuizActivity extends AppCompatActivity {
 
         if (selectedIndex == q.correctIndex) {
             // Bonne réponse
+            scoreCorrect += 1;
             quizInfo.setText(q.infos != null ? q.infos : "Bonne réponse !");
             quizInfo.setVisibility(View.VISIBLE);
             // Marquer bouton en vert
@@ -202,6 +231,9 @@ public class QuizActivity extends AppCompatActivity {
             displayCurrent();
         } else {
             // Fin du quiz
+            int total = Math.max(1, items.size());
+            int percent = (int) Math.round((scoreCorrect * 100.0) / total);
+            ScoreStorage.addScore(this, ScoreStorage.KEY_HISTORY_QUIZ, percent, 5);
             finish();
         }
     }

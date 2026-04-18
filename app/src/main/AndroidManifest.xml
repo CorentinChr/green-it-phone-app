@@ -26,6 +26,7 @@
         <activity android:name=".QuizLevelActivity" android:exported="true" />
         <activity android:name=".QuizLevelResultActivity" android:exported="true" />
         <activity android:name=".InfoActivity" android:exported="true" />
+        <activity android:name=".DataVizActivity" android:exported="true" />
         <activity android:name=".ProgressActivity" android:exported="true" />
         <activity android:name=".ProfileActivity" android:exported="true" />
 

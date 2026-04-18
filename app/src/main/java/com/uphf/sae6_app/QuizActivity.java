@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.uphf.sae6_app.model.QuizItem;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

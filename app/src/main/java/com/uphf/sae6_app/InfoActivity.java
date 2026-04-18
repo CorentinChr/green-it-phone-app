@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.uphf.sae6_app.model.InfoItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +21,12 @@ public class InfoActivity extends AppCompatActivity {
     private TextView infoContent;
     private TextView infoCounter;
     private Button btnNext;
+    private LinearLayout quizAnswersLayout;
 
     private List<InfoItem> items = new ArrayList<>();
     private int currentIndex = 0;
+    private int currentStepIndex = 0;
+    private List<InfoItem.InfoStep> currentSteps = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +38,27 @@ public class InfoActivity extends AppCompatActivity {
         infoContent = findViewById(R.id.info_content);
         infoCounter = findViewById(R.id.info_counter);
         btnNext = findViewById(R.id.btn_next_info);
+        quizAnswersLayout = findViewById(R.id.quiz_answers_layout);
+
+        // Récupérer le niveau de l'utilisateur (1=débutant, 2=intermédiaire, 3=difficile)
+        int userDifficulty = getDifficultyFromUserLevel();
+        // Récupérer le thème choisi (si passé en paramètre)
+        String selectedTheme = null;
+        if (getIntent() != null && getIntent().hasExtra("theme")) {
+            selectedTheme = getIntent().getStringExtra("theme");
+        }
 
         // Charger des fiches d'exemple
         loadSampleInfos();
+
+        // Filtrer selon la difficulté et le thème
+        List<InfoItem> filtered = new ArrayList<>();
+        for (InfoItem item : items) {
+            boolean diffOk = item.difficulty <= userDifficulty;
+            boolean themeOk = (selectedTheme == null) || (item.theme != null && item.theme.equalsIgnoreCase(selectedTheme));
+            if (diffOk && themeOk) filtered.add(item);
+        }
+        items = filtered;
 
         // Afficher première fiche
         if (!items.isEmpty()) {
@@ -46,58 +70,138 @@ public class InfoActivity extends AppCompatActivity {
             btnNext.setEnabled(false);
         }
 
-        btnNext.setOnClickListener(v -> onNext());
+        btnNext.setOnClickListener(v -> {
+            InfoItem it = items.get(currentIndex);
+            if (it.steps != null && !it.steps.isEmpty()) {
+                if (currentStepIndex < it.steps.size() - 1) {
+                    currentStepIndex++;
+                    displayCurrent();
+                } else if (currentIndex < items.size() - 1) {
+                    currentIndex++;
+                    currentStepIndex = 0;
+                    currentSteps = null;
+                    displayCurrent();
+                } else {
+                    finish();
+                }
+            } else {
+                onNext();
+            }
+        });
+    }
+
+    // Récupère la difficulté de l'utilisateur depuis les préférences (comme QuizActivity)
+    private int getDifficultyFromUserLevel() {
+        android.content.SharedPreferences prefs = getSharedPreferences("prefs_user", MODE_PRIVATE);
+        boolean done = prefs.getBoolean("level_done", false);
+        if (!done) return 1; // Par défaut débutant
+        String level = prefs.getString("user_level", null);
+        if ("beginner".equals(level)) return 1;
+        if ("intermediate".equals(level)) return 2;
+        if ("advanced".equals(level)) return 3;
+        return 1;
     }
 
     private void loadSampleInfos() {
-        items.add(new InfoItem(
-                "Réduire sa consommation électrique",
-                "Éteignez les appareils en veille et privilégiez des appareils économes pour réduire votre consommation d'énergie.",
-                "placeholder"));
+        items.clear();
+        // Fiche avec étapes texte + image + quiz
+        List<InfoItem.InfoStep> steps1 = new ArrayList<>();
+        steps1.add(new InfoItem.InfoStep("Éteignez les appareils en veille pour économiser l'énergie.", "placeholder"));
+        steps1.add(new InfoItem.InfoStep("Privilégiez les ampoules LED pour réduire la consommation.", null));
+        steps1.add(new InfoItem.InfoStep(new InfoItem.Quiz("Quel appareil consomme le plus en veille ?", java.util.Arrays.asList("Téléviseur", "Ordinateur portable", "Box internet", "Lampe LED"), 2)));
+        items.add(new InfoItem("Réduire sa consommation électrique", 1, "energie", steps1));
 
-        items.add(new InfoItem(
-                "Recycler le verre",
-                "Le verre est recyclable indéfiniment. Rincez les contenants et déposez-les dans la filière adaptée.",
-                "placeholder"));
+        // Fiche avec texte + quiz
+        List<InfoItem.InfoStep> steps2 = new ArrayList<>();
+        steps2.add(new InfoItem.InfoStep("Le verre est recyclable à l'infini sans perte de qualité.", "placeholder"));
+        steps2.add(new InfoItem.InfoStep(new InfoItem.Quiz("Que faut-il faire avant de recycler une bouteille en verre ?", java.util.Arrays.asList("La casser", "La rincer", "La peindre", "La remplir"), 1)));
+        items.add(new InfoItem("Recycler le verre", 1, "dechets", steps2));
 
-        items.add(new InfoItem(
-                "Nettoyage des e-mails",
-                "Supprimez régulièrement vos anciens e-mails pour réduire l'espace de stockage et l'empreinte associée.",
-                null));
+        // Fiche avec plusieurs étapes texte
+        List<InfoItem.InfoStep> steps3 = new ArrayList<>();
+        steps3.add(new InfoItem.InfoStep("Supprimez régulièrement vos anciens e-mails pour réduire l'empreinte numérique.", null));
+        steps3.add(new InfoItem.InfoStep("Videz la corbeille pour libérer de l'espace sur les serveurs.", null));
+        items.add(new InfoItem("Nettoyage des e-mails", 2, "numerique", steps3));
 
+        // Fiche simple (ancienne version)
         items.add(new InfoItem(
                 "Favoriser les transports actifs",
                 "La marche et le vélo sont des alternatives durables pour les trajets courts, réduisant émissions et pollution.",
-                "placeholder"));
+                "placeholder",
+                3,
+                "mobilite"));
     }
 
     private void displayCurrent() {
         InfoItem it = items.get(currentIndex);
         infoTitle.setText(it.title != null ? it.title : "");
-        infoContent.setText(it.content != null ? it.content : "");
+        // Si la fiche a des étapes interactives
+        if (it.steps != null && !it.steps.isEmpty()) {
+            if (currentSteps != it.steps) {
+                currentSteps = it.steps;
+                currentStepIndex = 0;
+            }
+            displayStep(it.steps.get(currentStepIndex));
+            infoCounter.setText(String.format("%d / %d (étape %d/%d)", currentIndex + 1, items.size(), currentStepIndex + 1, it.steps.size()));
+            btnNext.setText(currentStepIndex < it.steps.size() - 1 ? "Voir la suite" : (currentIndex < items.size() - 1 ? "Fiche suivante" : "Terminer"));
+        } else {
+            // Fiche simple (ancienne version)
+            infoContent.setVisibility(View.VISIBLE);
+            infoContent.setText(it.content != null ? it.content : "");
+            infoImage.setVisibility(it.imageName != null && !it.imageName.isEmpty() ? View.VISIBLE : View.GONE);
+            if (it.imageName != null && !it.imageName.isEmpty()) {
+                int resId = getResources().getIdentifier(it.imageName, "drawable", getPackageName());
+                if (resId != 0) infoImage.setImageResource(resId);
+            }
+            infoCounter.setText(String.format("%d / %d", currentIndex + 1, items.size()));
+            btnNext.setText(currentIndex < items.size() - 1 ? "Suivant" : "Terminer");
+        }
+    }
 
-        // Image
-        if (it.imageName != null && !it.imageName.isEmpty()) {
-            int resId = getResources().getIdentifier(it.imageName, "drawable", getPackageName());
-            if (resId != 0) {
-                infoImage.setImageResource(resId);
-                infoImage.setVisibility(View.VISIBLE);
+    private void displayStep(InfoItem.InfoStep step) {
+        if (quizAnswersLayout != null) quizAnswersLayout.removeAllViews();
+        if (step.quiz != null) {
+            infoContent.setVisibility(View.VISIBLE);
+            infoContent.setText(step.quiz.question);
+            infoImage.setVisibility(View.GONE);
+            if (quizAnswersLayout != null) {
+                for (int i = 0; i < step.quiz.answers.size(); i++) {
+                    Button answerBtn = new Button(this);
+                    answerBtn.setText(step.quiz.answers.get(i));
+                    int idx = i;
+                    answerBtn.setOnClickListener(v -> handleQuizAnswer(step, idx, answerBtn));
+                    quizAnswersLayout.addView(answerBtn);
+                }
+                quizAnswersLayout.setVisibility(View.VISIBLE);
+            }
+            btnNext.setEnabled(false);
+        } else {
+            infoContent.setVisibility(View.VISIBLE);
+            infoContent.setText(step.text != null ? step.text : "");
+            if (step.imageName != null && !step.imageName.isEmpty()) {
+                int resId = getResources().getIdentifier(step.imageName, "drawable", getPackageName());
+                if (resId != 0) {
+                    infoImage.setImageResource(resId);
+                    infoImage.setVisibility(View.VISIBLE);
+                } else {
+                    infoImage.setVisibility(View.GONE);
+                }
             } else {
                 infoImage.setVisibility(View.GONE);
             }
-        } else {
-            infoImage.setVisibility(View.GONE);
+            if (quizAnswersLayout != null) quizAnswersLayout.setVisibility(View.GONE);
+            btnNext.setEnabled(true);
         }
+    }
 
-        // Compteur
-        infoCounter.setText(String.format("%d / %d", currentIndex + 1, items.size()));
-
-        // Bouton Suivant
-        if (currentIndex < items.size() - 1) {
-            btnNext.setText("Suivant");
-        } else {
-            btnNext.setText("Terminé");
+    private void handleQuizAnswer(InfoItem.InfoStep step, int selectedIdx, Button answerBtn) {
+        boolean correct = selectedIdx == step.quiz.correctIndex;
+        answerBtn.setBackgroundColor(getResources().getColor(correct ? android.R.color.holo_green_light : android.R.color.holo_red_light));
+        for (int i = 0; i < quizAnswersLayout.getChildCount(); i++) {
+            quizAnswersLayout.getChildAt(i).setEnabled(false);
         }
+        btnNext.setEnabled(true);
+        infoContent.setText(step.quiz.question + "\n\n" + (correct ? "Bonne réponse !" : "Mauvaise réponse. La bonne réponse était : " + step.quiz.answers.get(step.quiz.correctIndex)));
     }
 
     private void onNext() {

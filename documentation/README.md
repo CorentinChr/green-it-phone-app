@@ -8,8 +8,8 @@ L'application vise à encourager les utilisateurs à adopter des comportements �
 - Un **tableau de bord** permettant d'estimer l'impact carbone lié au stockage d'e-mails
 - Un **quiz interactif** sur les thématiques environnementales (climat, énergie, déchets)
 - Des **fiches d'information** pratiques sur les gestes écologiques
-- Un **suivi de progression** (à venir)
-- Un **profil utilisateur** (à venir)
+- Un **suivi de progression**
+- Un **profil utilisateur**
 
 ---
 
@@ -34,7 +34,7 @@ L'application vise à encourager les utilisateurs à adopter des comportements �
 
 1. Cloner le dépôt :
    ```bash
-   git clone <url-du-repo>
+   git clone https://github.com/CorentinChr/green-it-phone-app.git
    cd SAE6_APP
    ```
 
@@ -130,27 +130,7 @@ Ou depuis Android Studio : `Run > Run 'All Tests'`
 
 Les tests utilisent **Robolectric** pour simuler l'environnement Android sans nécessiter d'émulateur.
 
-> **Note** : Les tests d'intégration et tests UI (Espresso) seront développés ultérieurement, le projet n'étant pas encore arrivé à terme.
-
-## Problèmes connus
-
-Si vous rencontrez l'erreur `The project is using an incompatible version (AGP 9.0.0)`, assurez-vous que votre fichier `build.gradle` (niveau projet) utilise AGP 8.13.0 maximum :
-
-```gradle
-dependencies {
-    classpath 'com.android.tools.build:gradle:8.13.0'
-}
-```
-
-## Évolutions futures
-
-- Système de points et badges
-- Sauvegarde de la progression utilisateur (base de données locale)
-- Ajout de nouveaux thèmes et questions pour le quiz
-- Intégration avec un backend pour synchronisation des données
-- Tests automatisés complets (UI, intégration, end-to-end)
-- Ajout de graphiques pour visualiser la progression
-- Support multilingue (français/anglais)
+---
 
 ## Membres du projet
 
@@ -163,5 +143,7 @@ dependencies {
 ## Licence
 
 Projet académique développé dans le cadre de la SAE 6 - BUT Informatique - IUT de Maubeuge (UPHF)
+
+#### Pour plus d'informations, veuillez consulter la documentation technique (TECHNICAL_DOCUMENTATION.md)
 
 

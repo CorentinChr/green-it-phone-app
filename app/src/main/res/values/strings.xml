@@ -6,7 +6,7 @@
     <!-- Profil par defaut (fictif) -->
     <string name="user_name_default">Noa Bajomée</string>
     <string name="user_score_default">Score : 600 pts</string>
-    <string name="avatar_description">Avatar dAlice Dupont</string>
+    <string name="avatar_description">Avatar Alice Dupont</string>
 
     <!-- Titres des cartes d'accueil -->
     <string name="card_dashboard">Tableau de bord</string>
@@ -14,6 +14,21 @@
     <string name="card_info">Fiches</string>
     <string name="card_progress">Progrès</string>
     <string name="card_profile">Profil</string>
+    <string name="card_data_viz">Données Green IT</string>
+
+    <!-- DataViz strings -->
+    <string name="data_viz_title">Visualisation des données Green IT</string>
+    <string name="data_column_device">Appareil</string>
+    <string name="data_column_category">Phase</string>
+    <string name="data_column_co2_mfg">CO2 fabrication (kg)</string>
+    <string name="data_column_energy_use">Énergie usage (kWh/an)</string>
+    <string name="data_column_co2_use">CO2 usage / an (kg)</string>
+    <string name="data_source_note">Source: ADEME (valeurs indicatives)</string>
+
+    <string name="cat_manufacturing">Fabrication</string>
+    <string name="cat_usage">Usage</string>
+    <string name="desc_manufacturing">Affiche l impact associe a la fabrication de l appareil. CO2 correspond aux emissions pour fabriquer un appareil.</string>
+    <string name="desc_usage">Affiche la consommation electrique annuelle et les emissions liees a l usage. Energie est en kWh par an.</string>
 
     <!-- Dashboard strings -->
     <string name="dashboard_title">Tableau de bord environnemental</string>
@@ -21,8 +36,27 @@
     <string name="interval_example">Tous les 7 jours</string>
     <string name="unsubscribe_label">Se désabonner des newsletters</string>
     <string name="impact_title">Impact estimé</string>
-    <string name="simulation_note">Simulation indicative — valeurs simplifiées pour visualiser un impact en temps réel.</string>
+    <string name="simulation_note">Simulation indicative - valeurs simplifiées pour visualiser un impact en temps réel.</string>
 
     <!-- Format string pour l'interval -->
     <string name="interval_value_format">Tous les %1$d jours</string>
+
+    <!-- Qualities for streaming spinner -->
+    <string-array name="streaming_qualities">
+        <item>SD</item>
+        <item>HD</item>
+        <item>UHD</item>
+    </string-array>
+
+    <!-- Categories list values used by spinner -->
+    <string-array name="data_categories">
+        <item>Fabrication</item>
+        <item>Usage</item>
+    </string-array>
+
+    <!-- Internal values array (lowercase keys) -->
+    <string-array name="data_categories_values">
+        <item>fabrication</item>
+        <item>usage</item>
+    </string-array>
 </resources>

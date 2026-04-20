@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="12dp">
+
+	<TextView
+		android:id="@+id/tv_device"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textStyle="bold"
+		android:textColor="@color/text_primary"
+		android:text="Appareil" />
+
+	<!-- Manufacturing row -->
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="6dp">
+
+		<TextView
+			android:id="@+id/label_mfg"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="Fabrication : CO2 (kg)" />
+
+		<TextView
+			android:id="@+id/tv_co2_mfg"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="8dp"
+			android:text="CO2 mfg" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="4dp">
+
+		<TextView
+			android:id="@+id/label_mfg_energy"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="Fabrication : energie (kWh)" />
+
+		<TextView
+			android:id="@+id/tv_energy_mfg"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="8dp"
+			android:text="energie mfg" />
+
+	</LinearLayout>
+
+	<!-- Usage row -->
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="4dp">
+
+		<TextView
+			android:id="@+id/label_use_energy"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="Usage : energie (kWh par an)" />
+
+		<TextView
+			android:id="@+id/tv_energy_use"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="8dp"
+			android:text="Énergie (kWh/an)" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="4dp">
+
+		<TextView
+			android:id="@+id/label_use_co2"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="Usage : CO2 (kg par an)" />
+
+		<TextView
+			android:id="@+id/tv_co2_use"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="8dp"
+			android:text="CO2 usage" />
+
+	</LinearLayout>
+
+	<TextView
+		android:id="@+id/tv_source"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="12sp"
+		android:textColor="@color/text_secondary"
+		android:layout_marginTop="6dp"
+		android:text="Source" />
+
+</LinearLayout>
+
+
+

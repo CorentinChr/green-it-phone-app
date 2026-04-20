@@ -4,15 +4,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.uphf.sae6_app.retrofit.RetrofitClient;
+import com.uphf.sae6_app.retrofit.ApiService;
+import com.uphf.sae6_app.retrofit.dto.UserRequest;
+import com.uphf.sae6_app.retrofit.dto.UserResponse;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * QuizLevelActivity
@@ -31,6 +43,10 @@ public class QuizLevelActivity extends AppCompatActivity {
     public static final String LEVEL_BEGINNER = "beginner";
     public static final String LEVEL_INTERMEDIATE = "intermediate";
     public static final String LEVEL_ADVANCED = "advanced";
+    
+    // Identifiants utilisateur (persistés localement)
+    public static final String KEY_USER_ID = "user_id";
+    public static final String KEY_USER_NAME = "user_name"; // adapte si tu as déjà une clé
 
     private TextView title;
     private TextView progress;
@@ -226,10 +242,49 @@ public class QuizLevelActivity extends AppCompatActivity {
         // Historique (5 derniers scores)
         ScoreStorage.addScore(this, ScoreStorage.KEY_HISTORY_LEVEL, scoreOn10, 5);
 
+        // Envoyer les données utilisateur au backend (asynchrone via Retrofit)
+        String userId = getOrCreateUserId();
+        String name = prefs.getString(KEY_USER_NAME, "");
+        uploadUserToBackend(userId, name, level, scoreOn10);
+
         // Afficher l'écran de résultat, puis retour à l'accueil (déblocage des cartes)
         Intent i = new Intent(this, QuizLevelResultActivity.class);
         startActivity(i);
         finish();
+    }
+
+    private String getOrCreateUserId() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String uid = prefs.getString(KEY_USER_ID, null);
+        if (uid == null) {
+            uid = UUID.randomUUID().toString();
+            prefs.edit().putString(KEY_USER_ID, uid).apply();
+        }
+        return uid;
+    }
+
+    private void uploadUserToBackend(String userId, String name, String level, int scoreOn10) {
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+
+        List<Integer> history = Collections.singletonList(scoreOn10);
+        UserRequest req = new UserRequest(userId, name, level, scoreOn10, history);
+
+        Call<UserResponse> call = api.upsertUser(req);
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful()) {
+                    Log.i("QuizLevel", "User uploaded: " + userId);
+                } else {
+                    Log.w("QuizLevel", "Upload failed code:" + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                Log.e("QuizLevel", "Upload error", t);
+            }
+        });
     }
 
     private static class LevelQuestion {

@@ -12,6 +12,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.uphf.sae6_app.model.QuizItem;
+import android.widget.Toast;
+import com.uphf.sae6_app.retrofit.RetrofitClient;
+import com.uphf.sae6_app.retrofit.GreenItApi;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,8 +55,7 @@ public class QuizActivity extends AppCompatActivity {
         prevBtn = findViewById(R.id.prev_btn);
         nextBtn = findViewById(R.id.next_btn);
 
-        // Charger des exemples (dans une vraie app on chargerait depuis un backend)
-        loadSampleQuestions();
+        // Charger les questions depuis l'API (remplace les données d'exemple)
 
         // Lire les paramètres de filtre (theme et difficulty) s'ils sont passés via Intent
         Intent intent = getIntent();
@@ -65,12 +70,13 @@ public class QuizActivity extends AppCompatActivity {
             }
         }
 
+        // Log du filtre reçu pour debug
+        android.util.Log.d("QuizActivity", "themeFilter reçu (onCreate): " + themeFilter + " difficultyFilter (initial): " + difficultyFilter);
+
         // Si aucune difficulté n'est fournie, on applique le niveau enregistré (si existant)
         if (difficultyFilter <= 0) {
             difficultyFilter = getDifficultyFromUserLevel();
         }
-
-        applyFilters(themeFilter, difficultyFilter);
 
         // Set listeners
         for (int i = 0; i < answerButtons.length; i++) {
@@ -80,21 +86,8 @@ public class QuizActivity extends AppCompatActivity {
 
         prevBtn.setOnClickListener(v -> showPrevious());
         nextBtn.setOnClickListener(v -> showNext());
-
-        // Afficher la première question ou message si aucune question
-        if (items.isEmpty()) {
-            quizQuestion.setText("Aucune question disponible pour ce filtre.");
-            for (Button b : answerButtons) b.setVisibility(View.GONE);
-            quizImage.setVisibility(View.GONE);
-            prevBtn.setVisibility(View.GONE);
-            nextBtn.setText("Retour");
-            nextBtn.setOnClickListener(v -> finish());
-        } else {
-            currentIndex = 0;
-            scoreCorrect = 0;
-            answeredCurrent = false;
-            displayCurrent();
-        }
+        // Lancer le chargement depuis l'API (le callback gérera l'affichage)
+        loadQuizFromApi(themeFilter, difficultyFilter);
     }
 
     private int getDifficultyFromUserLevel() {
@@ -109,52 +102,88 @@ public class QuizActivity extends AppCompatActivity {
         return -1;
     }
 
-    private void loadSampleQuestions() {
-        // Exemple de données (images supposées présentes dans res/drawable si on veut les afficher)
-        allItems.add(new QuizItem(1,
-                "Quel est le principal gaz responsable de l'effet de serre ?",
-                Arrays.asList("Oxygène", "Dioxyde de carbone", "Azote", "Hélium"),
-                1,
-                "Bonne réponse ! Le CO2 est l'un des gaz à effet de serre les plus importants.",
-                "climat",
-                1,
-                "placeholder")); // Image placeholder
+    private void loadQuizFromApi(String themeFilter, int difficultyFilter) {
+        GreenItApi api = RetrofitClient.getInstance().create(GreenItApi.class);
+        api.getQuiz().enqueue(new Callback<java.util.List<QuizItem>>() {
+            @Override
+            public void onResponse(Call<java.util.List<QuizItem>> call, Response<java.util.List<QuizItem>> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(QuizActivity.this, "Erreur API quiz", Toast.LENGTH_LONG).show();
+                    finish();
+                    return;
+                }
+                allItems.clear();
+                allItems.addAll(response.body());
+                // après avoir rempli allItems dans onResponse
+                for (QuizItem qi : allItems) {
+                    android.util.Log.d("QuizActivity", "quiz id=" + qi.id + " theme=" + qi.theme);
+                }
+                android.util.Log.d("QuizActivity", "items totaux: " + allItems.size());
 
-        allItems.add(new QuizItem(2,
-                "Quelle action réduit la consommation d'énergie domestique ?",
-                Arrays.asList("Laisser les appareils en veille", "Installer des ampoules LED", "Ouvrir les fenêtres en hiver", "Utiliser de l'eau chaude souvent"),
-                1,
-                "Les ampoules LED consomment beaucoup moins d'énergie que les ampoules incandescentes.",
-                "energie",
-                1,
-                "ic_quiz_energy")); // L'image n'existe pas donc l'app n'affiche rien
+                // Appliquer les filtres côté client
+                applyFilters(themeFilter, difficultyFilter);
 
-        allItems.add(new QuizItem(3,
-                "Quel matériau est le plus facilement recyclable ?",
-                Arrays.asList("Plastique mixte", "Verre", "Textile mélangé", "Contenant composite"),
-                1,
-                "Le verre est recyclable indéfiniment sans perte de qualité.",
-                "dechets",
-                2,
-                "ic_quiz_glass"));
+                if (items.isEmpty()) {
+                    quizQuestion.setText("Aucune question disponible pour ce filtre.");
+                    for (Button b : answerButtons) b.setVisibility(View.GONE);
+                    quizImage.setVisibility(View.GONE);
+                    prevBtn.setVisibility(View.GONE);
+                    nextBtn.setText("Retour");
+                    nextBtn.setOnClickListener(v -> finish());
+                } else {
+                    currentIndex = 0;
+                    scoreCorrect = 0;
+                    answeredCurrent = false;
+                    displayCurrent();
+                }
+            }
 
-        allItems.add(new QuizItem(4,
-                "Quelle est la durée de décomposition approximative d'une bouteille en plastique ?",
-                Arrays.asList("10 ans", "100 ans", "450 ans", "1 an"),
-                2,
-                "Une bouteille plastique peut mettre plusieurs centaines d'années à se décomposer.",
-                "dechets",
-                3,
-                null)); // Pas d'image pour cette question
+            @Override
+            public void onFailure(Call<java.util.List<QuizItem>> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(QuizActivity.this, "Erreur réseau quiz: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
     }
 
     private void applyFilters(String theme, int difficulty) {
         items.clear();
+
+        String normalizedFilter = normalizeKey(theme);
+        android.util.Log.d("QuizActivity", "applyFilters: normalizedFilter=" + normalizedFilter + " difficulty=" + difficulty + " allItems=" + allItems.size());
+
         for (QuizItem q : allItems) {
-            boolean themeOk = (theme == null) || (q.theme != null && q.theme.equalsIgnoreCase(theme));
-            boolean diffOk = (difficulty <= 0) || (q.difficulty == difficulty);
-            if (themeOk && diffOk) items.add(q);
+            String qThemeNorm = normalizeKey(q.theme);
+
+            boolean themeOk;
+            if (normalizedFilter == null) {
+                themeOk = true;
+            } else if (qThemeNorm != null && qThemeNorm.equals(normalizedFilter)) {
+                themeOk = true;
+            } else {
+                // fallback permissif: accepter si l'un contient l'autre (après normalisation)
+                themeOk = (qThemeNorm != null && (qThemeNorm.contains(normalizedFilter) || normalizedFilter.contains(qThemeNorm)));
+            }
+
+            // Accepter les questions dont la difficulté est inférieure ou égale
+            // au niveau de l'utilisateur (comme dans InfoActivity)
+            boolean diffOk = (difficulty <= 0) || (q.difficulty <= difficulty);
+            if (themeOk && diffOk) {
+                items.add(q);
+                android.util.Log.d("QuizActivity", "kept quiz id=" + q.id + " theme=" + q.theme + " normalized=" + qThemeNorm);
+            }
         }
+
+        android.util.Log.d("QuizActivity", "items après filtrage: " + items.size());
+    }
+
+    private static String normalizeKey(String s) {
+        if (s == null) return null;
+        String n = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD);
+        n = n.replaceAll("\\p{M}", ""); // supprime accents
+        n = n.replaceAll("[^A-Za-z0-9]", ""); // supprime espaces/symboles
+        return n.toLowerCase();
     }
 
     private void displayCurrent() {

@@ -10,6 +10,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.uphf.sae6_app.model.InfoItem;
+import android.widget.Toast;
+import com.uphf.sae6_app.retrofit.RetrofitClient;
+import com.uphf.sae6_app.retrofit.GreenItApi;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,27 +54,8 @@ public class InfoActivity extends AppCompatActivity {
             selectedTheme = getIntent().getStringExtra("theme");
         }
 
-        // Charger des fiches d'exemple
-        loadSampleInfos();
-
-        // Filtrer selon la difficulté et le thème
-        List<InfoItem> filtered = new ArrayList<>();
-        for (InfoItem item : items) {
-            boolean diffOk = item.difficulty <= userDifficulty;
-            boolean themeOk = (selectedTheme == null) || (item.theme != null && item.theme.equalsIgnoreCase(selectedTheme));
-            if (diffOk && themeOk) filtered.add(item);
-        }
-        items = filtered;
-
-        // Afficher première fiche
-        if (!items.isEmpty()) {
-            currentIndex = 0;
-            displayCurrent();
-        } else {
-            infoTitle.setText("Aucune fiche disponible.");
-            infoContent.setText("");
-            btnNext.setEnabled(false);
-        }
+        // Charger les fiches depuis l'API (remplace les données d'exemple)
+        loadInfosFromApi(selectedTheme, userDifficulty);
 
         btnNext.setOnClickListener(v -> {
             InfoItem it = items.get(currentIndex);
@@ -132,6 +119,48 @@ public class InfoActivity extends AppCompatActivity {
                 "mobilite"));
     }
 
+    private void loadInfosFromApi(String selectedTheme, int userDifficulty) {
+        GreenItApi api = RetrofitClient.getInstance().create(GreenItApi.class);
+        api.getInfos().enqueue(new Callback<java.util.List<InfoItem>>() {
+            @Override
+            public void onResponse(Call<java.util.List<InfoItem>> call, Response<java.util.List<InfoItem>> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(InfoActivity.this, "Erreur API infos", Toast.LENGTH_LONG).show();
+                    finish();
+                    return;
+                }
+                items.clear();
+                items.addAll(response.body());
+
+                // Filtrer côté client
+                List<InfoItem> filtered = new ArrayList<>();
+                for (InfoItem item : items) {
+                    boolean diffOk = item.difficulty <= userDifficulty;
+                    boolean themeOk = (selectedTheme == null) || (item.theme != null && item.theme.equalsIgnoreCase(selectedTheme));
+                    if (diffOk && themeOk) filtered.add(item);
+                }
+                items = filtered;
+
+                // Afficher première fiche
+                if (!items.isEmpty()) {
+                    currentIndex = 0;
+                    displayCurrent();
+                } else {
+                    infoTitle.setText("Aucune fiche disponible.");
+                    infoContent.setText("");
+                    btnNext.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<java.util.List<InfoItem>> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(InfoActivity.this, "Erreur réseau infos: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+    }
+
     private void displayCurrent() {
         InfoItem it = items.get(currentIndex);
         infoTitle.setText(it.title != null ? it.title : "");
@@ -159,6 +188,9 @@ public class InfoActivity extends AppCompatActivity {
     }
 
     private void displayStep(InfoItem.InfoStep step) {
+        // s'assurer que le champ quiz est initialisé même si l'API renvoie
+        // les propriétés du quiz à plat (question, answers, correctIndex)
+        if (step != null) step.ensureQuiz();
         if (quizAnswersLayout != null) quizAnswersLayout.removeAllViews();
         if (step.quiz != null) {
             infoContent.setVisibility(View.VISIBLE);

@@ -10,6 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.uphf.sae6_app.model.GreenItData;
+import android.widget.Toast;
+import com.uphf.sae6_app.retrofit.RetrofitClient;
+import com.uphf.sae6_app.retrofit.GreenItApi;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +46,8 @@ public class DataVizActivity extends AppCompatActivity {
         android.widget.Spinner spinner = findViewById(R.id.spinner_category);
         TextView tvCatDesc = findViewById(R.id.tv_category_description);
 
-        // Charger des données d'exemple (simulées / indicatives — ADEME)
-        List<GreenItData> items = loadSampleData();
+        // Initialement liste vide — les données seront chargées depuis l'API
+        List<GreenItData> items = new ArrayList<>();
 
         // Setup initial category
         String initialCategory = getResources().getStringArray(R.array.data_categories_values)[0];
@@ -49,6 +55,9 @@ public class DataVizActivity extends AppCompatActivity {
         DataVizAdapter adapter = new DataVizAdapter(this, items, userLevel, initialCategory);
         rvData.setLayoutManager(new LinearLayoutManager(this));
         rvData.setAdapter(adapter);
+
+        // Charger données depuis l'API et notifier l'adapter
+        loadGreenItDataFromApi(items, adapter);
 
         // Mettre a jour description et adapter quand spinner change
         spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
@@ -88,6 +97,28 @@ public class DataVizActivity extends AppCompatActivity {
         list.add(new GreenItData("Data center (par utilisateur)", 0.0, 0.0, 200.0, 100.0, src));
 
         return list;
+    }
+
+    private void loadGreenItDataFromApi(List<GreenItData> items, DataVizAdapter adapter) {
+        GreenItApi api = RetrofitClient.getInstance().create(GreenItApi.class);
+        api.getGreenItData().enqueue(new Callback<java.util.List<GreenItData>>() {
+            @Override
+            public void onResponse(Call<java.util.List<GreenItData>> call, Response<java.util.List<GreenItData>> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(DataVizActivity.this, "Erreur API données Green IT", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                items.clear();
+                items.addAll(response.body());
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<java.util.List<GreenItData>> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(DataVizActivity.this, "Erreur réseau données: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
 

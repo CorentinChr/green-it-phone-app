@@ -37,6 +37,12 @@ public class InfoItem {
         public String text;
         public String imageName;
         public Quiz quiz;
+        // Champs additionnels pour mapper la réponse JSON plate (format reçu de l'API)
+        public Integer id;
+        public String type; // e.g. "TEXT" or "QUIZ"
+        public String question;
+        public java.util.List<String> answers;
+        public Integer correctIndex;
 
         public InfoStep(String text, String imageName) {
             this.text = text;
@@ -44,6 +50,19 @@ public class InfoItem {
         }
         public InfoStep(Quiz quiz) {
             this.quiz = quiz;
+        }
+
+        /**
+         * Assure que le champ `quiz` est initialisé aussi bien pour le format
+         * historique (où `quiz` était un objet) que pour le format plat renvoyé
+         * par l'API (où les propriétés du quiz sont au même niveau dans l'étape).
+         */
+        public void ensureQuiz() {
+            if (this.quiz == null && "QUIZ".equalsIgnoreCase(this.type) && this.question != null) {
+                int idx = this.correctIndex != null ? this.correctIndex : 0;
+                java.util.List<String> ans = this.answers != null ? this.answers : new java.util.ArrayList<>();
+                this.quiz = new Quiz(this.question, ans, idx);
+            }
         }
     }
 

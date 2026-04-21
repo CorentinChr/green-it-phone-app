@@ -1,15 +1,17 @@
 # Application Mobile SAE 6 - Green IT
 
-Application Android éducative dédiée à la sensibilisation aux pratiques écologiques et au numérique responsable, développée dans le cadre de la SAE "Évolution d'une application existante"  de semestre 6 du BUT Informatique de l'IUT de Maubeuge.
+Application Android éducative dédiée à la sensibilisation aux pratiques écologiques et au numérique responsable, développée dans le cadre de la SAE "Évolution d'une application existante" de semestre 6 du BUT Informatique de l'IUT de Maubeuge.
 
 ## Objectif
 
 L'application vise à encourager les utilisateurs à adopter des comportements écoresponsables à travers :
-- Un **tableau de bord** permettant d'estimer l'impact carbone lié au stockage d'e-mails
-- Un **quiz interactif** sur les thématiques environnementales (climat, énergie, déchets)
-- Des **fiches d'information** pratiques sur les gestes écologiques
-- Un **suivi de progression** (à venir)
-- Un **profil utilisateur** (à venir)
+- Un **quiz de positionnement** (10 questions) qui détermine un niveau utilisateur (débutant/intermédiaire/difficile)
+- Un **tableau de bord** d'estimation d'impact CO2e enrichi (mails, matériel, services numériques)
+- Un **quiz thématique** (questions chargées depuis API), filtré par thème et difficulté
+- Des **fiches d'information interactives** (texte, image, étapes, mini-quiz)
+- Une **visualisation de données Green IT** avec niveaux de détail selon le profil
+- Un **suivi de progression** basé sur l'historique des scores
+- Un **profil utilisateur** persistant (nom + niveau)
 
 ---
 
@@ -17,16 +19,22 @@ L'application vise à encourager les utilisateurs à adopter des comportements �
 
 - **Langage** : Java
 - **Build tool** : Gradle
-- **Version Android Gradle Plugin** : 8.13.0 
-- **Minimum SDK** : API 21
+- **Android Gradle Plugin (catalogue de versions)** : 9.0.1
+- **SDK Android** : minSdk 30, targetSdk 36, compileSdk 36
+- **Réseau** : Retrofit + Gson + OkHttp (logging interceptor)
+- **Graphiques** : MPAndroidChart
+- **Tests unitaires Android** : JUnit4 + Robolectric
 
 ---
 
 ### Prérequis
 
-- Android Studio Panda 1 | 2025.3.1 ou version compatible
-- JDK 17 ou supérieur
-- Android SDK avec les outils de build appropriés
+- Android Studio récent (avec support AGP/Gradle compatible)
+- JDK 11+
+- Android SDK Platform 36
+- Connexion internet (pour les appels API vers le backend Railway)
+
+> Note compatibilité : la version AGP déclarée actuellement est `9.0.1` (`gradle/libs.versions.toml`). Si Android Studio signale une incompatibilité AGP, aligner temporairement vers la version AGP maximale supportée par l'IDE.
 
 ---
 
@@ -34,7 +42,7 @@ L'application vise à encourager les utilisateurs à adopter des comportements �
 
 1. Cloner le dépôt :
    ```bash
-   git clone <url-du-repo>
+   git clone https://github.com/CorentinChr/green-it-phone-app.git
    cd SAE6_APP
    ```
 
@@ -42,7 +50,7 @@ L'application vise à encourager les utilisateurs à adopter des comportements �
 
 3. Synchroniser Gradle (`File > Sync Project with Gradle Files`)
 
-4. Vérifier que la version AGP dans `build.gradle` est compatible (8.13.0 maximum)
+4. Vérifier la configuration des versions (`gradle/libs.versions.toml` et `app/build.gradle`)
 
 ---
 
@@ -50,16 +58,16 @@ L'application vise à encourager les utilisateurs à adopter des comportements �
 
 ### Sur émulateur
 
-1. Créer un AVD (Android Virtual Device) via `Tools > Device Manager`
+1. Créer un AVD via `Tools > Device Manager`
 2. Lancer l'émulateur
-3. Cliquer sur `Run 'app'` ou utiliser le raccourci `Shift+F10`
+3. Cliquer sur `Run 'app'` (ou `Shift+F10`)
 
 ### Sur appareil physique
 
-1. Activer le mode développeur sur l'appareil
+1. Activer les options développeur
 2. Activer le débogage USB
-3. Connecter l'appareil via USB
-4. Sélectionner l'appareil dans la liste et lancer l'application
+3. Connecter l'appareil
+4. Sélectionner l'appareil et lancer l'application
 
 ---
 
@@ -67,90 +75,98 @@ L'application vise à encourager les utilisateurs à adopter des comportements �
 
 ```
 app/src/main/java/com/uphf/sae6_app/
-├── MainActivity.java          # Activité principale (point d'entrée)
-├── HomeActivity.java          # Écran d'accueil avec navigation
-├── DashboardActivity.java     # Tableau de bord impact CO2e
-├── QuizActivity.java          # Quiz environnemental
-├── InfoActivity.java          # Fiches informatives
-├── ProgressActivity.java      # Suivi de progression (placeholder)
-├── ProfileActivity.java       # Profil utilisateur (placeholder)
-├── QuizItem.java              # Modèle de question
-└── InfoItem.java              # Modèle de fiche info
+├── MainActivity.java                   # Activity Android générique (layout edge-to-edge)
+├── HomeActivity.java                   # Écran d'accueil + déverrouillage post-quiz de niveau
+├── QuizLevelActivity.java              # Quiz de positionnement (score /10, niveau)
+├── QuizLevelResultActivity.java        # Résultat du quiz de positionnement
+├── DashboardActivity.java              # Estimation impact CO2e + pie chart catégories
+├── QuizActivity.java                   # Quiz thématique (API + filtres thème/difficulté)
+├── InfoActivity.java                   # Fiches thématiques (étapes + mini-quiz)
+├── DataVizActivity.java                # Liste de données Green IT (API + filtrage catégorie)
+├── DataVizAdapter.java                 # Adaptateur RecyclerView selon niveau utilisateur
+├── ProgressActivity.java               # Historique/moyenne des scores (quiz et quiz de niveau)
+├── ProfileActivity.java                # Gestion du nom et niveau utilisateur
+├── ScoreStorage.java                   # Utilitaire SharedPreferences (historique JSON)
+├── model/
+│   ├── QuizItem.java                   # Modèle question quiz
+│   ├── InfoItem.java                   # Modèle fiche/étape/quiz intégré
+│   └── GreenItData.java                # Modèle data visualisation
+└── retrofit/
+    ├── RetrofitClient.java             # Configuration client HTTP
+    ├── GreenItApi.java                 # Endpoints quiz/fiches/data
+    ├── ApiService.java                 # Endpoints utilisateurs
+    └── dto/                            # UserRequest / UserResponse
 ```
 
 ---
 
 ## Fonctionnalités implémentées
 
-### Tableau de bord
-- Calcul simplifié de l'impact carbone du stockage d'e-mails
-- Configuration de la fréquence de nettoyage (1-30 jours)
-- Option de désabonnement pour réduire le volume de mails
-- Visualisation de l'impact estimé en kg CO2e/an
+### Quiz de positionnement et verrouillage de l'accueil
+- Quiz de test en 10 questions pour déterminer le niveau utilisateur
+- Persistance du score et du niveau dans `SharedPreferences` (`prefs_user`)
+- Déverrouillage des cartes principales sur l'écran d'accueil après validation
+- Écran de résultat dédié (`QuizLevelResultActivity`)
 
-### Quiz
-- Questions sur différents thèmes (climat, énergie, déchets)
-- Système de filtrage par thème et difficulté (1-3)
-- Feedback immédiat avec explications
-- Navigation entre questions
+### Tableau de bord impact CO2e
+- Estimation globale sur trois catégories : mails, matériel, services
+- Paramètres utilisateur : fréquence de nettoyage, désabonnement, nombre d'appareils, heures de streaming
+- Choix qualité vidéo (SD/HD/UHD) avec impact sur le calcul services
+- Diagramme circulaire MPAndroidChart de répartition par catégorie
 
-### Fiches informatives
-- Conseils pratiques pour des gestes écologiques
-- Navigation séquentielle
-- Support d'images (optionnel)
+### Quiz et fiches thématiques via API
+- Chargement des questions et fiches depuis le backend (`RetrofitClient`)
+- Filtrage par thème (`energie`, `dechets`, `numerique`, `mobilite`)
+- Filtrage par difficulté lié au niveau utilisateur
+- Feedback immédiat sur les réponses et navigation séquentielle
+
+### Visualisation de données Green IT
+- Écran `DataVizActivity` basé sur `RecyclerView`
+- Deux catégories de lecture : fabrication et usage
+- Niveau d'information progressif selon le profil utilisateur
+- Données récupérées via endpoint `greenitdata`
+
+### Progression et profil
+- Historique des scores (5 derniers) pour quiz et quiz de niveau
+- Calcul de moyenne et message "prêt à passer au niveau supérieur"
+- Modification/sauvegarde du nom et du niveau utilisateur
 
 ---
 
 ## Tests
 
-Les tests unitaires ont été développés pour valider le bon fonctionnement des différentes activités et modèles de données.
+Des tests unitaires Robolectric sont présents dans `app/src/test/java/com/uphf/sae6_app`.
 
 ### Exécuter les tests
 
-Pour lancer les tests unitaires :
-```bash
-./gradlew test
+Depuis la racine du projet :
+```powershell
+.\gradlew.bat testDebugUnitTest
 ```
 
-Ou depuis Android Studio : `Run > Run 'All Tests'`
+Ou pour tout lancer :
+```powershell
+.\gradlew.bat test
+```
+
+Rapport HTML principal : `app/build/reports/tests/testDebugUnitTest/index.html`
 
 ---
 
-### Tests implémentés
+### Tests implémentés (principaux)
 
-- **DashboardActivityTest** : Tests du calcul d'impact CO2e et des interactions utilisateur
-- **QuizActivityTest** : Tests du chargement des questions, filtrage et validation des réponses
-- **InfoActivityTest** : Tests de la navigation et affichage des fiches d'information
-- **HomeActivityTest** : Tests de navigation entre les différentes sections
-- **MainActivityTest** : Tests d'initialisation de l'activité principale
-- **QuizItemTest** : Tests du modèle de données des questions
-- **InfoItemTest** : Tests du modèle de données des fiches
-- **ProfileActivityTest** : Tests de l'activité profil (placeholder)
-- **ProgressActivityTest** : Tests de l'activité progression (placeholder)
+- **DashboardActivityTest** : calculs dashboard (méthodes internes)
+- **DataVizActivityTest** / **DataVizAdapterTest** : initialisation UI + adaptation des niveaux
+- **HomeActivityTest** : logique de verrouillage et navigation quiz de niveau
+- **QuizLevelActivityTest** / **QuizLevelResultActivityTest** : stockage score/niveau + écran résultat
+- **QuizActivityTest** : normalisation de thème
+- **InfoActivityTest** : niveau utilisateur dérivé des préférences
+- **ScoreStorageTest** : stockage, moyenne, formatage historique
+- **ProfileActivityTest** / **ProgressActivityTest** / **MainActivityTest** : comportements UI de base
 
-Les tests utilisent **Robolectric** pour simuler l'environnement Android sans nécessiter d'émulateur.
+> `QuizItemTest` et `InfoItemTest` existent mais ne contiennent pas encore de cas de test actifs.
 
-> **Note** : Les tests d'intégration et tests UI (Espresso) seront développés ultérieurement, le projet n'étant pas encore arrivé à terme.
-
-## Problèmes connus
-
-Si vous rencontrez l'erreur `The project is using an incompatible version (AGP 9.0.0)`, assurez-vous que votre fichier `build.gradle` (niveau projet) utilise AGP 8.13.0 maximum :
-
-```gradle
-dependencies {
-    classpath 'com.android.tools.build:gradle:8.13.0'
-}
-```
-
-## Évolutions futures
-
-- Système de points et badges
-- Sauvegarde de la progression utilisateur (base de données locale)
-- Ajout de nouveaux thèmes et questions pour le quiz
-- Intégration avec un backend pour synchronisation des données
-- Tests automatisés complets (UI, intégration, end-to-end)
-- Ajout de graphiques pour visualiser la progression
-- Support multilingue (français/anglais)
+---
 
 ## Membres du projet
 
@@ -163,5 +179,7 @@ dependencies {
 ## Licence
 
 Projet académique développé dans le cadre de la SAE 6 - BUT Informatique - IUT de Maubeuge (UPHF)
+
+#### Pour plus d'informations, veuillez consulter la documentation technique (TECHNICAL_DOCUMENTATION.md)
 
 

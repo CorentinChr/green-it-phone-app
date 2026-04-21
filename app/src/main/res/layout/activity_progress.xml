@@ -55,6 +55,58 @@
             android:textColor="@color/text_primary"
             android:layout_marginBottom="16dp" />
 
+        <!-- Section Quiz habitudes numériques -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Habitudes numériques"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/qh_avg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Moyenne : —"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/qh_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="—"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Section Quiz AR -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quiz AR"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/ar_avg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Moyenne : —"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/ar_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="—"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="16dp" />
+
         <!-- Section Quiz de test -->
         <TextView
             android:layout_width="match_parent"

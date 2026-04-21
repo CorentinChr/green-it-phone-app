@@ -47,6 +47,8 @@ public class QuizLevelActivity extends AppCompatActivity {
     // Identifiants utilisateur (persistés localement)
     public static final String KEY_USER_ID = "user_id";
     public static final String KEY_USER_NAME = "user_name"; // adapte si tu as déjà une clé
+    // ID fixe utilisé pour les tests afin d'avoir toujours la même entrée côté backend
+    public static final String TEST_USER_ID = "123";
 
     private TextView title;
     private TextView progress;
@@ -254,20 +256,30 @@ public class QuizLevelActivity extends AppCompatActivity {
     }
 
     private String getOrCreateUserId() {
+        // Pour les besoins de tests, renvoyer systématiquement un ID constant
+        // Si tu veux revenir au comportement normal, remplacer cette méthode
+        // par la version qui génère un UUID et le persiste.
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String uid = prefs.getString(KEY_USER_ID, null);
-        if (uid == null) {
-            uid = UUID.randomUUID().toString();
-            prefs.edit().putString(KEY_USER_ID, uid).apply();
-        }
-        return uid;
+        // Persiste l'ID de test si nécessaire (compatibilité avec le reste du code)
+        prefs.edit().putString(KEY_USER_ID, TEST_USER_ID).apply();
+        return TEST_USER_ID;
     }
 
     private void uploadUserToBackend(String userId, String name, String level, int scoreOn10) {
         ApiService api = RetrofitClient.getInstance().create(ApiService.class);
 
-        List<Integer> history = Collections.singletonList(scoreOn10);
-        UserRequest req = new UserRequest(userId, name, level, scoreOn10, history);
+        // Récupère l'historique local (dernier scores du quiz de niveau) et l'envoie
+        List<Integer> history = ScoreStorage.getScores(this, ScoreStorage.KEY_HISTORY_LEVEL);
+        if (history.isEmpty()) {
+            history = Collections.singletonList(scoreOn10);
+        }
+        // Récupérer également les historiques supplémentaires (si présents)
+        List<Integer> qhHistory = ScoreStorage.getScores(this, ScoreStorage.KEY_HISTORY_QH);
+        List<Integer> arHistory = ScoreStorage.getScores(this, ScoreStorage.KEY_HISTORY_AR);
+        if (qhHistory.isEmpty()) qhHistory = Collections.emptyList();
+        if (arHistory.isEmpty()) arHistory = Collections.emptyList();
+
+        UserRequest req = new UserRequest(userId, name, level, scoreOn10, history, qhHistory, arHistory);
 
         Call<UserResponse> call = api.upsertUser(req);
         call.enqueue(new Callback<UserResponse>() {

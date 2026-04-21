@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,9 @@ public final class ScoreStorage {
 
     public static final String KEY_HISTORY_QUIZ = "history_quiz"; // quiz normal (score en %)
     public static final String KEY_HISTORY_LEVEL = "history_level"; // quiz de test (score /10)
+    // Nouveaux historiques : quiz habitudes numériques (qh) et quiz AR
+    public static final String KEY_HISTORY_QH = "history_qh"; // quiz habitudes numériques (score /10)
+    public static final String KEY_HISTORY_AR = "history_ar"; // quiz application AR (score /10)
 
     public static void addScore(Context context, String historyKey, int score, int maxItems) {
         if (context == null) return;
@@ -80,6 +82,15 @@ public final class ScoreStorage {
             if (i < scores.size() - 1) sb.append("\n");
         }
         return sb.toString();
+    }
+
+    public static void setScores(Context context, String historyKey, List<Integer> scores) {
+        if (context == null) return;
+        if (scores == null) scores = new ArrayList<>();
+        SharedPreferences prefs = context.getSharedPreferences(QuizLevelActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        JSONArray arr = new JSONArray();
+        for (Integer s : scores) arr.put(s != null ? s : 0);
+        prefs.edit().putString(historyKey, arr.toString()).apply();
     }
 }
 

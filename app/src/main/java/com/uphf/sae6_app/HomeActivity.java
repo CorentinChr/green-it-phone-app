@@ -94,6 +94,13 @@ public class HomeActivity extends AppCompatActivity {
             if (t != null) t.setText(getString(R.string.card_profile));
         }
 
+        // Si aucun nom d'utilisateur n'est enregistré, demander le prénom dès le premier lancement
+        if (!UserPrefs.hasUserName(this)) {
+            UsernameDialogFragment dlg = new UsernameDialogFragment();
+            dlg.setCancelable(false);
+            dlg.show(getSupportFragmentManager(), "username_dialog");
+        }
+
         refreshLockedUi();
     }
 

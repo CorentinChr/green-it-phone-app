@@ -29,6 +29,8 @@ public class DataVizActivity extends AppCompatActivity {
 
     private RecyclerView rvData;
     private TextView tvSourceNote;
+    private DataVizAdapter adapter;
+    private String currentCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +51,25 @@ public class DataVizActivity extends AppCompatActivity {
         // Initialement liste vide — les données seront chargées depuis l'API
         List<GreenItData> items = new ArrayList<>();
 
-        // Setup initial category
-        String initialCategory = getResources().getStringArray(R.array.data_categories_values)[0];
+        // Préparer la catégorie "fabrication" comme cible par défaut si elle existe
+        String[] categories = getResources().getStringArray(R.array.data_categories_values);
+        int fabricationIndex = 0;
+        for (int i = 0; i < categories.length; i++) {
+            if ("fabrication".equalsIgnoreCase(categories[i])) {
+                fabricationIndex = i;
+                break;
+            }
+        }
 
-        DataVizAdapter adapter = new DataVizAdapter(this, items, userLevel, initialCategory);
+        // Créer un adapter initial (vide pour l'instant) — on utilisera le listener du Spinner
+        // retenir la catégorie courante et créer l'adapter initial
+        this.currentCategory = categories[fabricationIndex];
+        this.adapter = new DataVizAdapter(this, items, userLevel, this.currentCategory);
         rvData.setLayoutManager(new LinearLayoutManager(this));
-        rvData.setAdapter(adapter);
+        rvData.setAdapter(this.adapter);
 
-        // Charger données depuis l'API et notifier l'adapter
-        loadGreenItDataFromApi(items, adapter);
+        // Charger données depuis l'API et notifier l'adapter (utilise le champ adapter)
+        loadGreenItDataFromApi(items, userLevel);
 
         // Mettre a jour description et adapter quand spinner change
         spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
@@ -70,15 +82,36 @@ public class DataVizActivity extends AppCompatActivity {
                 } else {
                     tvCatDesc.setText(getString(R.string.desc_usage));
                 }
-                // recreate adapter with new category
-                DataVizAdapter newAdapter = new DataVizAdapter(DataVizActivity.this, items, userLevel, cat);
-                rvData.setAdapter(newAdapter);
+                // recreate adapter with new category and keep reference in the activity
+                DataVizActivity.this.currentCategory = cat;
+                DataVizAdapter newAdapter = new DataVizAdapter(DataVizActivity.this, items, userLevel, DataVizActivity.this.currentCategory);
+                DataVizActivity.this.adapter = newAdapter;
+                rvData.setAdapter(DataVizActivity.this.adapter);
             }
 
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {
             }
         });
+
+        // Positionner la sélection du spinner après avoir attaché le listener
+        // pour forcer l'exécution de la logique d'initialisation (description + adapter)
+        spinner.setSelection(fabricationIndex);
+
+        // Certaines configurations de Spinner n'appellent pas onItemSelected lors du setSelection
+        // si la sélection n'a pas changé. Pour garantir l'initialisation de l'affichage,
+        // on déclenche explicitement la même logique que dans le listener ici.
+        String initialCat = categories[fabricationIndex];
+        if ("fabrication".equalsIgnoreCase(initialCat)) {
+            tvCatDesc.setText(getString(R.string.desc_manufacturing));
+        } else {
+            tvCatDesc.setText(getString(R.string.desc_usage));
+        }
+        // recréer l'adapter pour la catégorie initiale afin d'afficher les bonnes données
+        this.currentCategory = initialCat;
+        DataVizAdapter initialAdapter = new DataVizAdapter(DataVizActivity.this, items, userLevel, this.currentCategory);
+        this.adapter = initialAdapter;
+        rvData.setAdapter(this.adapter);
 
         // Footer / note sur la source (déjà en string ressources)
         tvSourceNote.setText(getString(R.string.data_source_note));
@@ -99,7 +132,7 @@ public class DataVizActivity extends AppCompatActivity {
         return list;
     }
 
-    private void loadGreenItDataFromApi(List<GreenItData> items, DataVizAdapter adapter) {
+    private void loadGreenItDataFromApi(List<GreenItData> items, String userLevel) {
         GreenItApi api = RetrofitClient.getInstance().create(GreenItApi.class);
         api.getGreenItData().enqueue(new Callback<java.util.List<GreenItData>>() {
             @Override
@@ -110,7 +143,18 @@ public class DataVizActivity extends AppCompatActivity {
                 }
                 items.clear();
                 items.addAll(response.body());
-                adapter.notifyDataSetChanged();
+                // recréer l'adapter courant avec les données reçues pour s'assurer
+                // que le filtrage/parcours interne de l'adapter est appliqué
+                if (DataVizActivity.this.currentCategory != null) {
+                    DataVizAdapter refreshed = new DataVizAdapter(DataVizActivity.this, items, userLevel, DataVizActivity.this.currentCategory);
+                    DataVizActivity.this.adapter = refreshed;
+                    DataVizActivity.this.rvData.setAdapter(refreshed);
+                } else {
+                    // fallback: notifier si on a un adapter
+                    if (DataVizActivity.this.adapter != null) {
+                        DataVizActivity.this.adapter.notifyDataSetChanged();
+                    }
+                }
             }
 
             @Override

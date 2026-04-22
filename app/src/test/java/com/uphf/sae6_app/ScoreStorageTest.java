@@ -15,6 +15,9 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.uphf.sae6_app.data.local.ScoreStorage;
+import com.uphf.sae6_app.ui.activities.QuizLevelActivity;
+
 @RunWith(RobolectricTestRunner.class)
 public class ScoreStorageTest {
 

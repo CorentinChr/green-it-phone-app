@@ -1,4 +1,4 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.ui.activities;
 
 import android.os.Bundle;
 import android.graphics.Color;
@@ -18,6 +18,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.uphf.sae6_app.R;
 
 import java.util.Locale;
 

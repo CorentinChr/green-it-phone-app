@@ -1,4 +1,4 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.ui.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.uphf.sae6_app.R;
+import com.uphf.sae6_app.ui.fragments.UsernameDialogFragment;
+import com.uphf.sae6_app.data.local.UserPrefs;
 
 /**
  * HomeActivity

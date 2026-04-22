@@ -17,6 +17,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.uphf.sae6_app.ui.activities.QuizLevelActivity;
+
 @RunWith(RobolectricTestRunner.class)
 public class QuizLevelActivityTest {
 

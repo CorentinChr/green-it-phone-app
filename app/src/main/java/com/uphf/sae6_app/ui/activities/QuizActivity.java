@@ -1,4 +1,4 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.ui.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,16 +11,17 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.uphf.sae6_app.R;
+import com.uphf.sae6_app.data.local.ScoreStorage;
 import com.uphf.sae6_app.model.QuizItem;
 import android.widget.Toast;
-import com.uphf.sae6_app.retrofit.RetrofitClient;
-import com.uphf.sae6_app.retrofit.GreenItApi;
+import com.uphf.sae6_app.data.retrofit.RetrofitClient;
+import com.uphf.sae6_app.data.retrofit.GreenItApi;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class QuizActivity extends AppCompatActivity {

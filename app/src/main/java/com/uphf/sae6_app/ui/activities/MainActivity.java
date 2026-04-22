@@ -1,4 +1,4 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.ui.activities;
 
 import android.os.Bundle;
 
@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.uphf.sae6_app.R;
+import com.uphf.sae6_app.ui.fragments.UsernameDialogFragment;
+import com.uphf.sae6_app.data.local.UserPrefs;
 
 public class MainActivity extends AppCompatActivity {
 

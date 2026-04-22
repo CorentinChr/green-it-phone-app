@@ -1,18 +1,19 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.ui.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.uphf.sae6_app.ui.adapters.DataVizAdapter;
+import com.uphf.sae6_app.R;
 import com.uphf.sae6_app.model.GreenItData;
 import android.widget.Toast;
-import com.uphf.sae6_app.retrofit.RetrofitClient;
-import com.uphf.sae6_app.retrofit.GreenItApi;
+import com.uphf.sae6_app.data.retrofit.RetrofitClient;
+import com.uphf.sae6_app.data.retrofit.GreenItApi;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

@@ -1,4 +1,4 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.ui.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.uphf.sae6_app.R;
 
 /**
  * Écran de résultat du quiz de test.

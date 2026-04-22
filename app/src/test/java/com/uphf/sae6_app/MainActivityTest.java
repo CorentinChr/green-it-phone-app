@@ -7,6 +7,8 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.assertNotNull;
 
+import com.uphf.sae6_app.ui.activities.MainActivity;
+
 @RunWith(RobolectricTestRunner.class)
 public class MainActivityTest {
 

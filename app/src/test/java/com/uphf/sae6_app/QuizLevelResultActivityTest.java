@@ -14,6 +14,9 @@ import org.robolectric.RuntimeEnvironment;
 
 import static org.junit.Assert.assertTrue;
 
+import com.uphf.sae6_app.ui.activities.QuizLevelActivity;
+import com.uphf.sae6_app.ui.activities.QuizLevelResultActivity;
+
 @RunWith(RobolectricTestRunner.class)
 public class QuizLevelResultActivityTest {
 

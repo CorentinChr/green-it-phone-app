@@ -13,6 +13,10 @@ import org.robolectric.RuntimeEnvironment;
 
 import static org.junit.Assert.assertTrue;
 
+import com.uphf.sae6_app.data.local.ScoreStorage;
+import com.uphf.sae6_app.ui.activities.ProgressActivity;
+import com.uphf.sae6_app.ui.activities.QuizLevelActivity;
+
 @RunWith(RobolectricTestRunner.class)
 public class ProgressActivityTest {
 

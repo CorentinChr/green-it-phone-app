@@ -1,7 +1,6 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.ui.fragments;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -14,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
+import com.uphf.sae6_app.data.local.UserPrefs;
 
 /**
  * DialogFragment demandant le nom de l'utilisateur au premier lancement.

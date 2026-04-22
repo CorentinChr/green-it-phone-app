@@ -12,6 +12,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.uphf.sae6_app.ui.activities.DataVizActivity;
+
 @RunWith(RobolectricTestRunner.class)
 public class DataVizActivityTest {
 

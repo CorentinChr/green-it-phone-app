@@ -1,4 +1,4 @@
-package com.uphf.sae6_app.retrofit;
+package com.uphf.sae6_app.data.retrofit;
 
 import com.uphf.sae6_app.model.GreenItData;
 import com.uphf.sae6_app.model.InfoItem;

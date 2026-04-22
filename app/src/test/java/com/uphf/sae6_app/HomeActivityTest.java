@@ -14,6 +14,9 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.uphf.sae6_app.ui.activities.HomeActivity;
+import com.uphf.sae6_app.ui.activities.QuizLevelActivity;
+
 @RunWith(RobolectricTestRunner.class)
 public class HomeActivityTest {
 

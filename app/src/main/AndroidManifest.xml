@@ -15,23 +15,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SAE6_APP">
 
-        <activity android:name=".MainActivity" android:exported="true" />
+        <activity android:name=".ui.activities.MainActivity" android:exported="true" />
 
-        <activity android:name=".HomeActivity" android:exported="true">
+        <activity android:name=".ui.activities.HomeActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".DashboardActivity" android:exported="true" />
-        <activity android:name=".QuizActivity" android:exported="true" />
-        <activity android:name=".QuizLevelActivity" android:exported="true" />
-        <activity android:name=".QuizLevelResultActivity" android:exported="true" />
-        <activity android:name=".InfoActivity" android:exported="true" />
-        <activity android:name=".DataVizActivity" android:exported="true" />
-        <activity android:name=".ProgressActivity" android:exported="true" />
-        <activity android:name=".ProfileActivity" android:exported="true" />
+        <activity android:name=".ui.activities.DashboardActivity" android:exported="true" />
+        <activity android:name=".ui.activities.QuizActivity" android:exported="true" />
+        <activity android:name=".ui.activities.QuizLevelActivity" android:exported="true" />
+        <activity android:name=".ui.activities.QuizLevelResultActivity" android:exported="true" />
+        <activity android:name=".ui.activities.InfoActivity" android:exported="true" />
+        <activity android:name=".ui.activities.DataVizActivity" android:exported="true" />
+        <activity android:name=".ui.activities.ProgressActivity" android:exported="true" />
+        <activity android:name=".ui.activities.ProfileActivity" android:exported="true" />
 
     </application>
 

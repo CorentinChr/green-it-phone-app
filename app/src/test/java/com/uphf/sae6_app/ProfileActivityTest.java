@@ -13,6 +13,9 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.assertEquals;
 
+import com.uphf.sae6_app.ui.activities.ProfileActivity;
+import com.uphf.sae6_app.ui.activities.QuizLevelActivity;
+
 @RunWith(RobolectricTestRunner.class)
 public class ProfileActivityTest {
 

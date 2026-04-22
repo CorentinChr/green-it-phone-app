@@ -1,4 +1,4 @@
-package com.uphf.sae6_app.retrofit.dto;
+package com.uphf.sae6_app.data.retrofit.dto;
 
 import java.util.List;
 

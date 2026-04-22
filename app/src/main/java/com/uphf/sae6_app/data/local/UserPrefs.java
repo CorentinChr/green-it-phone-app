@@ -1,4 +1,4 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.data.local;
 
 import android.content.Context;
 import android.content.SharedPreferences;

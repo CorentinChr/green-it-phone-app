@@ -1,14 +1,13 @@
-package com.uphf.sae6_app.retrofit;
+package com.uphf.sae6_app.data.retrofit;
 
-import com.uphf.sae6_app.retrofit.dto.UserRequest;
-import com.uphf.sae6_app.retrofit.dto.UserResponse;
+import com.uphf.sae6_app.data.retrofit.dto.UserRequest;
+import com.uphf.sae6_app.data.retrofit.dto.UserResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Header;
 
 public interface ApiService {
 

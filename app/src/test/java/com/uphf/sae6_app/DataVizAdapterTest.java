@@ -4,6 +4,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.uphf.sae6_app.model.GreenItData;
+import com.uphf.sae6_app.ui.activities.QuizLevelActivity;
+import com.uphf.sae6_app.ui.adapters.DataVizAdapter;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

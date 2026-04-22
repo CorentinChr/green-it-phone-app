@@ -13,6 +13,8 @@ import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertEquals;
 
+import com.uphf.sae6_app.ui.activities.InfoActivity;
+
 @RunWith(RobolectricTestRunner.class)
 public class InfoActivityTest {
 

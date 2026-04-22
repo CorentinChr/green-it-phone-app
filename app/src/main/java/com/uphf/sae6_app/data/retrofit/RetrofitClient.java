@@ -1,4 +1,4 @@
-package com.uphf.sae6_app.retrofit;
+package com.uphf.sae6_app.data.retrofit;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

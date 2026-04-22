@@ -1,4 +1,4 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.ui.activities;
 
 import android.os.Bundle;
 import android.view.View;
@@ -9,10 +9,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.uphf.sae6_app.R;
 import com.uphf.sae6_app.model.InfoItem;
 import android.widget.Toast;
-import com.uphf.sae6_app.retrofit.RetrofitClient;
-import com.uphf.sae6_app.retrofit.GreenItApi;
+import com.uphf.sae6_app.data.retrofit.RetrofitClient;
+import com.uphf.sae6_app.data.retrofit.GreenItApi;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

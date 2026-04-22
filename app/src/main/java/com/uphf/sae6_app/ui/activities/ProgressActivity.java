@@ -1,4 +1,4 @@
-package com.uphf.sae6_app;
+package com.uphf.sae6_app.ui.activities;
 
 import android.os.Bundle;
 import android.widget.TextView;
@@ -6,9 +6,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
-import com.uphf.sae6_app.retrofit.RetrofitClient;
-import com.uphf.sae6_app.retrofit.ApiService;
-import com.uphf.sae6_app.retrofit.dto.UserResponse;
+
+import com.uphf.sae6_app.R;
+import com.uphf.sae6_app.data.local.ScoreStorage;
+import com.uphf.sae6_app.data.retrofit.RetrofitClient;
+import com.uphf.sae6_app.data.retrofit.ApiService;
+import com.uphf.sae6_app.data.retrofit.dto.UserResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
